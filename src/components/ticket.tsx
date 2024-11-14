@@ -1,7 +1,5 @@
 import { QrCode, Triangle } from 'lucide-react';
 import logo from '/logo.png'
-
-
 interface TicketProps {
     participant: {
       name: string;
@@ -18,8 +16,7 @@ function Ticket({ participant,agenda }: TicketProps) {
       <div className="absolute inset-0 p-[2px] rounded-[30px] bg-gradient-to-br from-cyan-400 via-purple-500 to-pink-500">
         <div className="relative h-full w-full bg-black rounded-[28px] overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-t from-purple-500/10 to-transparent" />
-          
-          {/* Ticket notches */}
+          {/* Ticket  */}
           <div className="absolute -left-2 top-1/2 w-4 h-4 bg-black rounded-full transform -translate-y-1/2" />
           <div className="absolute -right-2 top-1/2 w-4 h-4 bg-black rounded-full transform -translate-y-1/2" />
           
@@ -38,7 +35,7 @@ function Ticket({ participant,agenda }: TicketProps) {
               </div>
               
               <div className="text-center space-y-2">
-                <h3 className=" font-bold text-white">{participant.name}, estará presente esta meet!</h3>
+                <h3 className=" font-bold text-white">¡{participant.name} estará presente en esta meetup!</h3>
                 <p className="text-base text-purple-300">@debatechformosa</p>
               </div>
               
