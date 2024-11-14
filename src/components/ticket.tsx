@@ -1,13 +1,16 @@
 import { QrCode, Triangle } from 'lucide-react';
 import logo from '/logo.png'
-interface TicketProps {
-  participant: {
-    name: string;
-    email: string;
-  };
-}
 
-function Ticket({ participant }: TicketProps) {
+
+interface TicketProps {
+    participant: {
+      name: string;
+      email: string;
+    };
+    agenda: { time: string; topic: string }[];
+  }
+
+function Ticket({ participant,agenda }: TicketProps) {
   const ticketId = Math.random().toString(36).substr(2, 6).toUpperCase();
   
   return (
@@ -42,14 +45,12 @@ function Ticket({ participant }: TicketProps) {
               <div className="w-full bg-zinc-900/50 backdrop-blur-sm rounded-xl p-4 space-y-3 border border-purple-500/20">
                 <h4 className="text-lg font-semibold text-purple-300">Agenda</h4>
                 <ul className="space-y-2">
-                  <li className="flex items-center gap-2">
-                    <span className="text-cyan-400 font-mono text-sm">20:05</span>
-                    <span className="text-gray-200 text-sm">Roles/Terminologias en una (Startups/Big tech)</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-cyan-400 font-mono text-sm">20:45</span>
-                    <span className="text-gray-200 text-sm">Laravel</span>
-                  </li>
+                  {agenda.map((item, index) => (
+                    <li key={index} className="flex items-center gap-2">
+                      <span className="text-cyan-400 font-mono text-sm">{item.time}</span>
+                      <span className="text-gray-200 text-sm">{item.topic}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
