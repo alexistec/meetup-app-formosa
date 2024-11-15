@@ -4,27 +4,29 @@ import logo from '/logo.png';
 
 import RegistrationForm from './components/registration-form';
 import Ticket from './components/ticket';
-import { addDoc, collection, getDocs, query, Timestamp, where } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, Timestamp, where, doc, updateDoc } from 'firebase/firestore';
 import { db } from './libs/firebase-config';
 
 interface Event {
   id: string;
   title: string;
   description: string;
-  date: string;
+  date: Timestamp;
   active: boolean;
+  participantLimit: number | null;
+  registeredParticipants: number;
   agenda: { time: string; topic: string }[];
 }
 
 function App() {
   const [participant, setParticipant] = useState<{ name: string; email: string; } | null>(null);
   const [event, setEvent] = useState<Event | null>(null);
-  const [loading, setLoading] = useState(false); 
-  const [fetchingEvent, setFetchingEvent] = useState(true); 
+  const [loading, setLoading] = useState(false);
+  const [fetchingEvent, setFetchingEvent] = useState(true);
 
   const handleRegister = async (name: string, email: string) => {
     if (!event) return;
-
+    
     setLoading(true);
 
     try {
@@ -36,18 +38,28 @@ function App() {
       );
       const querySnapshot = await getDocs(existingParticipantQuery);
 
-      if (querySnapshot.empty) {
-        
-        await addDoc(participantsRef, {
-          name,
-          email,
-          eventId: event.id,
-          timestamp: Timestamp.now(),
-        });
-      } else {
+      if (!querySnapshot.empty) {
         console.log("El usuario ya está registrado para este evento.");
+        return;
       }
 
+      if (event.participantLimit !== null && event.registeredParticipants >= event.participantLimit ) {
+        console.log("Lo sentimos, ya se han llenado los cupos de asistencia.")
+      }
+
+      await addDoc(participantsRef, {
+        name,
+        email,
+        eventId: event.id,
+        timestamp: Timestamp.now(),
+      });
+
+      const eventRef = doc(db, 'events', event.id);
+      await updateDoc(eventRef, {
+        registeredParticipants: event.registeredParticipants + 1,
+      });
+
+      setEvent({ ...event, registeredParticipants: event.registeredParticipants + 1 });
       setParticipant({ name, email });
     } catch (error) {
       console.error("Error al registrar al participante:", error);
@@ -60,7 +72,7 @@ function App() {
     const fetchActiveEvent = async () => {
       const eventRef = collection(db, 'events');
       const activeEventQuery = query(eventRef, where('active', '==', true));
-      
+
       try {
         const querySnapshot = await getDocs(activeEventQuery);
 
@@ -75,7 +87,7 @@ function App() {
         console.error("Error al obtener el evento activo:", error);
       }
 
-      setFetchingEvent(false); 
+      setFetchingEvent(false);
     };
 
     fetchActiveEvent();
@@ -84,10 +96,10 @@ function App() {
   return (
     <div className="min-h-screen bg-black text-white p-4">
       <div className="max-w-4xl mx-auto">
-        {fetchingEvent ? ( 
+        {fetchingEvent ? (
           <div className="flex justify-center items-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-            <p className="ml-2">Loading evento...</p>
+            <p className="ml-2">Cargando evento...</p>
           </div>
         ) : event ? (
           !participant ? (
@@ -102,7 +114,7 @@ function App() {
                   <p className="ml-2">Registrando...</p>
                 </div>
               ) : (
-                <RegistrationForm onRegister={handleRegister} />
+                  <RegistrationForm onRegister={handleRegister} />
               )}
             </>
           ) : (
