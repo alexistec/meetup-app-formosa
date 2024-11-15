@@ -16,13 +16,20 @@ interface Event {
   agenda: { time: string; topic: string }[];
 }
 
+interface Participant {
+  name: string;
+  email: string;
+  role: string;
+  linkedin: string;
+}
+
 function App() {
-  const [participant, setParticipant] = useState<{ name: string; email: string; } | null>(null);
+  const [participant, setParticipant] = useState<Participant | null>(null);
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(false); 
   const [fetchingEvent, setFetchingEvent] = useState(true); 
 
-  const handleRegister = async (name: string, email: string) => {
+  const handleRegister = async (name: string, email: string, role: string, linkedin: string) => {
     if (!event) return;
 
     setLoading(true);
@@ -41,6 +48,8 @@ function App() {
         await addDoc(participantsRef, {
           name,
           email,
+          role,
+          linkedin,
           eventId: event.id,
           timestamp: Timestamp.now(),
         });
@@ -48,7 +57,7 @@ function App() {
         console.log("El usuario ya está registrado para este evento.");
       }
 
-      setParticipant({ name, email });
+      setParticipant({ name, email, role, linkedin });
     } catch (error) {
       console.error("Error al registrar al participante:", error);
     }
