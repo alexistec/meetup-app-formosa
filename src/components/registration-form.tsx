@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 
 
 interface RegistrationFormProps {
-  onRegister: (name: string, email: string) => void;
+  onRegister: (name: string, email: string, role: string, linkedin: string) => void;
 }
 
 function RegistrationForm({ onRegister }: RegistrationFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
+  const [linkedin, setLinkedin] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && email) {
-      onRegister(name, email);
+    if (name && email && role && linkedin) {
+      onRegister(name, email, role, linkedin);
     }
   };
 
@@ -42,6 +44,32 @@ function RegistrationForm({ onRegister }: RegistrationFormProps) {
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 focus:outline-none focus:border-purple-500"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="role" className="block text-sm font-medium mb-2">
+            Role
+          </label>
+          <input
+            type="text"
+            id="role"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 focus:outline-none focus:border-purple-500"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="linkedin" className="block text-sm font-medium mb-2">
+            Linkedin
+          </label>
+          <input
+            type="text"
+            id="linkedin"
+            value={linkedin}
+            onChange={(e) => setLinkedin(e.target.value)}
             className="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 focus:outline-none focus:border-purple-500"
             required
           />
