@@ -4,3 +4,19 @@ The goal of this project is to develop an attendance registration system for our
 be limited, we need an accurate count of attendes for each event.
 
 The app is build with React, Typescript, and TailwindCSS for the front end, and leverages Firebase as the backend for securely storing participant data and managing real-time information for each meetup.
+
+## Getting Started
+
+To run this project locally, follow these steps:
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Start the development server:
+
+```bash
+npm run dev
+```
