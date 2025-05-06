@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Triangle } from 'lucide-react';
 import logo from '/logo.png';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 import RegistrationForm from './components/registration-form';
 import Ticket from './components/ticket';
+import Home from './pages/home';
 import { addDoc, collection, getDocs, query, Timestamp, where } from 'firebase/firestore';
 import { db } from './libs/firebase-config';
 
@@ -21,6 +23,7 @@ function App() {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(false); 
   const [fetchingEvent, setFetchingEvent] = useState(true); 
+  const [ticketId, setTicketId] = useState<string | null>(null);
 
   const handleRegister = async (name: string, email: string) => {
     if (!event) return;
@@ -37,15 +40,18 @@ function App() {
       const querySnapshot = await getDocs(existingParticipantQuery);
 
       if (querySnapshot.empty) {
-        
-        await addDoc(participantsRef, {
+        const docRef = await addDoc(participantsRef, {
           name,
           email,
+          isAssistence: false,
           eventId: event.id,
           timestamp: Timestamp.now(),
         });
+        setTicketId(docRef.id);
       } else {
         console.log("El usuario ya está registrado para este evento.");
+        // If already registered, get the existing doc id
+        setTicketId(querySnapshot.docs[0].id);
       }
 
       setParticipant({ name, email });
@@ -82,37 +88,44 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white p-4">
-      <div className="max-w-4xl mx-auto">
-        {fetchingEvent ? ( 
-          <div className="flex justify-center items-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-            <p className="ml-2">Loading evento...</p>
-          </div>
-        ) : event ? (
-          !participant ? (
-            <>
-              <div className="flex items-center gap-2 mb-8">
-                <Triangle className="text-purple-500 h-8 w-8" />
-                <img src={logo} className="h-8 w-auto object-contain" alt="Vite logo" />
-              </div>
-              {loading ? (
+    <Router>
+      <div className="min-h-screen bg-black text-white p-4">
+        <div className="max-w-4xl mx-auto">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/ticket" element={
+              fetchingEvent ? ( 
                 <div className="flex justify-center items-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
-                  <p className="ml-2">Registrando...</p>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                  <p className="ml-2">Loading evento...</p>
                 </div>
+              ) : event ? (
+                !participant ? (
+                  <>
+                    <div className="flex items-center gap-2 mb-8">
+                      <Triangle className="text-purple-500 h-8 w-8" />
+                      <img src={logo} className="h-8 w-auto object-contain" alt="Vite logo" />
+                    </div>
+                    {loading ? (
+                      <div className="flex justify-center items-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+                        <p className="ml-2">Registrando...</p>
+                      </div>
+                    ) : (
+                      <RegistrationForm onRegister={handleRegister} />
+                    )}
+                  </>
+                ) : (
+                  <Ticket participant={participant} agenda={event.agenda} ticketId={ticketId} />
+                )
               ) : (
-                <RegistrationForm onRegister={handleRegister} />
-              )}
-            </>
-          ) : (
-            <Ticket participant={participant} agenda={event.agenda} />
-          )
-        ) : (
-          <h1 className="text-center text-xl">No hay eventos disponibles</h1>
-        )}
+                <h1 className="text-center text-xl">No hay eventos disponibles</h1>
+              )
+            } />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </Router>
   );
 }
 

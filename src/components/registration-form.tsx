@@ -18,11 +18,11 @@ function RegistrationForm({ onRegister }: RegistrationFormProps) {
 
   return (
     <div className="max-w-md mx-auto bg-zinc-900 rounded-xl p-8">
-      <h2 className="text-2xl font-bold mb-6">Get Your Ticket</h2>
+      <h2 className="text-2xl font-bold mb-6">Mi ticket</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="name" className="block text-sm font-medium mb-2">
-            Name
+            Nombre
           </label>
           <input
             type="text"
