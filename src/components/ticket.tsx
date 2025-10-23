@@ -55,7 +55,7 @@ function Ticket({ participant, agenda, ticketId }: TicketProps) {
               </div>
             </div>
             <div className="text-center space-y-1">
-              <p className="text-xs text-purple-300">Hosted by Macedo Martinez</p>
+              <p className="text-xs text-purple-300">Hosted by Impulsar</p>
               <p className="font-mono text-xl text-white tracking-wider">#{randomNumber}</p>
             </div>
           </div>
